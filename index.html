@@ -1,4 +1,3 @@
-
 <head>
     <style> body { margin: 0; } </style>
   
@@ -55,17 +54,17 @@
            .pointsData(pointsData)
            .pointLat(d => d.lat)
            .pointLng(d => d.lng)
-            .pointColor(d => d.color)
-            .pointAltitude(0.015)
-            .pointRadius(0.25)
-            .arcsData(arcData)
-            .arcStartLat(d => d.startLat)
-            .arcStartLng(d => d.startLng)
-            .arcEndLat(d => d.endLat)
-            .arcEndLng(d => d.endLng)
-            .arcColor(d => d.color)
-            .arcAltitude(0.015)
-            ;
+           .pointColor(d => d.color) // Use color directly
+           .pointAltitude(0.015)
+           .pointRadius(0.15)
+           .arcsData(arcData)
+           .arcStartLat(d => d.startLat)
+           .arcStartLng(d => d.startLng)
+           .arcEndLat(d => d.endLat)
+           .arcEndLng(d => d.endLng)
+           .arcColor(d => d.color) // Use color directly
+           .arcAltitude(0.015)
+           ;
 
         // setTimeout(() => Globe.polygonAltitude(() => Math.random()), 4000);
   
@@ -97,10 +96,9 @@
           // Frame cycle
           tbControls.update();
           renderer.render(scene, camera);
-          Globe.rotation.y += 0.03;
+          Globe.rotation.y += 0.003;
           requestAnimationFrame(animate);
         })();
       });
     </script>
   </body>
-  

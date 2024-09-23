@@ -178,7 +178,7 @@ def sample_points(num_points, max_attempts=100):
     return per_country_points, points, country_counts
 
 # Update the total_points variable
-total_points = 5000
+total_points = 2000
 
 # Call the updated sample_points function
 # sampled_points, country_counts = sample_points(total_points)
