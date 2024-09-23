@@ -1,0 +1,106 @@
+
+<head>
+    <style> body { margin: 0; } </style>
+  
+    <script type="importmap">{ "imports": {
+      "three": "//unpkg.com/three/build/three.module.js",
+      "three/addons/": "//unpkg.com/three/examples/jsm/"
+    }}</script>
+    <script type="module">
+      import * as THREE from 'three';
+      window.THREE = THREE;
+    </script>
+  
+    <script src="//unpkg.com/three-globe" defer></script>
+  <!--  <script src="../../dist/three-globe.js" defer></script>-->
+  </head>
+  
+  <body>
+    <div id="globeViz"></div>
+  
+    <script type="module">
+      import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+  
+      // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
+      fetch('./ne_110m_admin_0_countries_language.geojson').then(res => res.json()).then(countries =>
+      {
+        // const Globe = new ThreeGlobe()
+        //   .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+        //   .polygonsData(countries.features.filter(d => d.properties.ISO_A2 !== 'AQ'))
+        //   .polygonCapColor(d => d.properties.pointColor)
+        //   .polygonSideColor(() => 'rgba(0, 200, 0, 0.1)')
+        //   .polygonStrokeColor(() => '#111')
+        //   .polygonAltitude(0.05)
+        //   .polygonsTransitionDuration(0);
+  
+
+        const pointsData = countries.features.filter(d => d.properties.ISO_A2 !== 'AQ').map(d => d.properties.points.map(p => ({
+            ...p,
+            lat: p.LATITUDE,
+            lng: p.LONGITUDE,
+            color: d.properties.pointColor
+          }))).flat();
+
+        const arcData = countries.features.filter(d => d.properties.ISO_A2 !== 'AQ').map(d => d.properties.arcs.map(p => ({
+            startLat: p.start_lat,
+            startLng: p.start_lon,
+            endLat: p.end_lat,
+            endLng: p.end_lon,
+            color: d.properties.pointColor
+          }))).flat();
+
+        const  Globe = new ThreeGlobe()
+           .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+           .pointsData(pointsData)
+           .pointLat(d => d.lat)
+           .pointLng(d => d.lng)
+            .pointColor(d => d.color)
+            .pointAltitude(0.015)
+            .pointRadius(0.25)
+            .arcsData(arcData)
+            .arcStartLat(d => d.startLat)
+            .arcStartLng(d => d.startLng)
+            .arcEndLat(d => d.endLat)
+            .arcEndLng(d => d.endLng)
+            .arcColor(d => d.color)
+            .arcAltitude(0.015)
+            ;
+
+        // setTimeout(() => Globe.polygonAltitude(() => Math.random()), 4000);
+  
+        // Setup renderer
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('globeViz').appendChild(renderer.domElement);
+  
+        // Setup scene
+        const scene = new THREE.Scene();
+        scene.add(Globe);
+        scene.add(new THREE.AmbientLight(0xcccccc, Math.PI));
+        scene.add(new THREE.DirectionalLight(0xffffff, 0.6 * Math.PI));
+  
+        // Setup camera
+        const camera = new THREE.PerspectiveCamera();
+        camera.aspect = window.innerWidth/ window.innerHeight;
+        camera.updateProjectionMatrix();
+        camera.position.z = 500;
+  
+        // Add camera controls
+        const tbControls = new TrackballControls(camera, renderer.domElement);
+        tbControls.minDistance = 101;
+        tbControls.rotateSpeed = 5;
+        tbControls.zoomSpeed = 0.8;
+  
+        // Kick-off renderer
+        (function animate() { // IIFE
+          // Frame cycle
+          tbControls.update();
+          renderer.render(scene, camera);
+          Globe.rotation.y += 0.03;
+          requestAnimationFrame(animate);
+        })();
+      });
+    </script>
+  </body>
+  
